@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from tortoise.contrib.fastapi import HTTPNotFoundError
+
 
 from models.stock import Stock
 from serialization.responses import Message
@@ -26,7 +26,7 @@ async def list_stock():
     return stocks
 
 
-@router.get("/{stock_id}", response_model=Stock, responses={404: {"model": HTTPNotFoundError}})
+@router.get("/{stock_id}", response_model=Stock)
 async def get_stock(stock_id: UUID):
     stock_data = await Stock.object.get_or_none(id=stock_id)
     if not stock_data:
@@ -44,7 +44,7 @@ async def update_stock(stock_id: UUID, stock_data: Stock):
     return await stock.update(**data)
 
 
-@router.delete("/{stock_id}", response_model=Message, responses={404: {"model": HTTPNotFoundError}})
+@router.delete("/{stock_id}", response_model=Message)
 async def delete_stock(stock_id: UUID):
     stock = await Stock.objects.get_or_none(id=stock_id)
     if not stock:

@@ -1,8 +1,4 @@
-from typing import List
-from uuid import UUID
-
-from fastapi import APIRouter, HTTPException
-from tortoise.contrib.fastapi import HTTPNotFoundError
+from fastapi import APIRouter
 
 from models.stock import Stock
 from models.stock_dividends import StockDividends

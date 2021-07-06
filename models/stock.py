@@ -5,14 +5,12 @@ from uuid import UUID
 
 import ormar
 
-from config import database, metadata
+from models.base import BaseMeta
 
 
 class Stock(ormar.Model):
-    class Meta:
+    class Meta(BaseMeta):
         tablename = "stockmodel"
-        database = database
-        metadata = metadata
 
     id: Optional[UUID] = ormar.UUID(primary_key=True, uuid_format="string", default=uuid.uuid1, nullable=True)
     name: str = ormar.String(max_length=100)
