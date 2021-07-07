@@ -3,15 +3,19 @@ import asyncio
 
 from fastapi.testclient import TestClient
 from models.stock import Stock
+from tests.generators import verified_user, generate_jwt
 
 
 def test_create_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop):  # nosec
+    user = event_loop.run_until_complete(verified_user())
+    token = event_loop.run_until_complete(generate_jwt(user))
+
     response = client.post(
         "/stock/", json={
             "name": "stock_test",
             "nemo": "1234",
-
-        }
+        },
+        headers={'Authorization': f'Bearer {token}'}
     )
     assert response.status_code == 200
     data = response.json()

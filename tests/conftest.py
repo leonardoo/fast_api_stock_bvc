@@ -37,3 +37,5 @@ def create_test_database(generate_engine):
 def client(event_loop) -> Generator:
     with TestClientApi(create_app(), loop=event_loop) as c:
         yield c
+
+

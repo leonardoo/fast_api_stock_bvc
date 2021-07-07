@@ -1,11 +1,12 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
-
+from fastapi import APIRouter, HTTPException, Depends
 
 from models.stock import Stock
+from models.users import User
 from serialization.responses import Message
+from plugins.fastapi_users import fastapi_users
 
 
 router = APIRouter(
@@ -15,7 +16,7 @@ router = APIRouter(
 
 
 @router.post("/", response_model=Stock)
-async def create_stock(stock: Stock):
+async def create_stock(stock: Stock, user: User = Depends(fastapi_users.current_user(verified=True))):
     await stock.save()
     return stock
 
