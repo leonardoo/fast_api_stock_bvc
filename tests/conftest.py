@@ -7,9 +7,10 @@ from typing import Generator
 import pytest
 import sqlalchemy
 
-from config import metadata
+from config import metadata, DATABASE
 from create_app import create_app
 from tests.client import TestClientApi
+from tests.generators import verified_user, generate_jwt
 
 
 @pytest.fixture(scope="session")
@@ -19,8 +20,7 @@ def event_loop():
 
 @pytest.fixture(scope="session")
 def generate_engine():
-    DATABASE_URL = os.getenv("TEST_DB", "postgres://postgres:12345@localhost:5432/bvcstock_test")
-    engine = sqlalchemy.create_engine(DATABASE_URL)
+    engine = sqlalchemy.create_engine(DATABASE)
     metadata.drop_all(engine)
     return engine
 
@@ -38,4 +38,15 @@ def client(event_loop) -> Generator:
     with TestClientApi(create_app(), loop=event_loop) as c:
         yield c
 
+
+@pytest.fixture
+def token(client, event_loop):
+    user = event_loop.run_until_complete(verified_user())
+    token = event_loop.run_until_complete(generate_jwt(user))
+    return token
+
+
+@pytest.fixture
+def headers(token):
+    return {'Authorization': f'Bearer {token}'}
 

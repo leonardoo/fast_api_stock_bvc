@@ -5,7 +5,7 @@ from models.stock import Stock
 from models.stock_value import StockValue
 
 
-def test_create_stock_value(client: TestClient, event_loop: asyncio.AbstractEventLoop):  # nosec
+def test_create_stock_value(client: TestClient, headers: dict, event_loop: asyncio.AbstractEventLoop):  # nosec
     async def add_to_db():
         await Stock.objects.create(
             name="name", nemo="nemo"
@@ -18,7 +18,8 @@ def test_create_stock_value(client: TestClient, event_loop: asyncio.AbstractEven
             "nemo": "nemo",
             "value": 100,
             "day": "2021-01-01"
-        }
+        },
+        headers=headers
     )
     assert response.status_code == 200
     data = response.json()

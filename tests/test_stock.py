@@ -3,19 +3,16 @@ import asyncio
 
 from fastapi.testclient import TestClient
 from models.stock import Stock
-from tests.generators import verified_user, generate_jwt
 
 
-def test_create_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop):  # nosec
-    user = event_loop.run_until_complete(verified_user())
-    token = event_loop.run_until_complete(generate_jwt(user))
+def test_create_stock(client: TestClient, headers: dict, event_loop: asyncio.AbstractEventLoop):  # nosec
 
     response = client.post(
         "/stock/", json={
             "name": "stock_test",
             "nemo": "1234",
         },
-        headers={'Authorization': f'Bearer {token}'}
+        headers=headers
     )
     assert response.status_code == 200
     data = response.json()
@@ -67,7 +64,8 @@ def test_get_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop):  
     assert data[0]["nemo"] == "nemo"
 
 
-def test_delete_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop):  # nosec
+def test_delete_stock(client: TestClient, headers: dict, event_loop: asyncio.AbstractEventLoop):  # nosec
+
     async def add_to_db():
         return await Stock.objects.create(
             name="name", nemo="nemo"
@@ -76,7 +74,8 @@ def test_delete_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop)
     stock = event_loop.run_until_complete(add_to_db())
 
     response = client.delete(
-        f"/stock/{stock.id}"
+        f"/stock/{stock.id}",
+        headers=headers
     )
     assert response.status_code == 200
     data = response.json()
@@ -84,7 +83,7 @@ def test_delete_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop)
     assert data["message"] == f"Deleted stock {stock.id}"
 
 
-def test_update_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop):  # nosec
+def test_update_stock(client: TestClient, headers: dict, event_loop: asyncio.AbstractEventLoop):  # nosec
     async def add_to_db():
         return await Stock.objects.create(
             name="name", nemo="nemo"
@@ -96,7 +95,8 @@ def test_update_stock(client: TestClient, event_loop: asyncio.AbstractEventLoop)
         f"/stock/{stock.id}", json={
             "name": "stock_test",
             "nemo": "1234",
-        }
+        },
+        headers=headers
     )
     assert response.status_code == 200
     data = response.json()

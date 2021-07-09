@@ -1,12 +1,13 @@
 from typing import List
 from datetime import datetime
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from starlette.responses import JSONResponse
 
 from models.stock import Stock
 from models.stock_dividends import StockDividends
-from serialization.responses import Message
+from models.users import User
+from plugins.fastapi_users import fastapi_users
 
 router = APIRouter(
     prefix="/dividends",
@@ -18,7 +19,7 @@ def get_current_year():
 
 
 @router.post("/", response_model=StockDividends)
-async def create_dividend(dividend: StockDividends):
+async def create_dividend(dividend: StockDividends, user: User = Depends(fastapi_users.current_user(verified=True))):
     stock = await Stock.objects.get_or_none(nemo=dividend.nemo)
     if not stock:
         return JSONResponse(status_code=404, content={"message": "Stock not found"})

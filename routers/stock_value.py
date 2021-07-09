@@ -1,11 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from starlette.responses import JSONResponse
 from models.stock import Stock
 from models.stock_value import StockValue
-from serialization.responses import Message
-
+from models.users import User
+from plugins.fastapi_users import fastapi_users
 
 router = APIRouter(
     prefix="/stockvalue",
@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.post("/", response_model=StockValue)
-async def create_stock_value(stock_value: StockValue):
+async def create_stock_value(stock_value: StockValue, user: User = Depends(fastapi_users.current_user(verified=True))):
     nemo = stock_value.nemo
     stock: Stock = await Stock.objects.get_or_none(nemo=nemo)
     if not stock:

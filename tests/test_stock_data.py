@@ -6,7 +6,7 @@ from models.stock_dividends import StockDividends
 from models.stock_value import StockValue
 
 
-def test_create_stock_data(client: TestClient, event_loop: asyncio.AbstractEventLoop):  # nosec
+def test_create_stock_data(client: TestClient, headers: dict, event_loop: asyncio.AbstractEventLoop):  # nosec
 
     #stock = event_loop.run_until_complete(add_to_db())
 
@@ -21,8 +21,8 @@ def test_create_stock_data(client: TestClient, event_loop: asyncio.AbstractEvent
             "paid_amount": 10,
             "ex_dividend_date": "2021-01-01",
             "paid_at": "2021-01-03"
-
-        }
+        },
+        headers=headers
     )
     assert response.status_code == 200
     data = response.json()

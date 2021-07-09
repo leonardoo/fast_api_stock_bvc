@@ -36,7 +36,7 @@ async def get_stock(stock_id: UUID):
 
 
 @router.post("/{stock_id}", response_model=Stock)
-async def update_stock(stock_id: UUID, stock_data: Stock):
+async def update_stock(stock_id: UUID, stock_data: Stock, user: User = Depends(fastapi_users.current_user(verified=True))):
     stock = await Stock.objects.get_or_none(id=stock_id)
     if not stock:
         raise HTTPException(status_code=404, detail=f"Stock {stock_id} not found")
@@ -46,7 +46,7 @@ async def update_stock(stock_id: UUID, stock_data: Stock):
 
 
 @router.delete("/{stock_id}", response_model=Message)
-async def delete_stock(stock_id: UUID):
+async def delete_stock(stock_id: UUID, user: User = Depends(fastapi_users.current_user(verified=True))):
     stock = await Stock.objects.get_or_none(id=stock_id)
     if not stock:
         raise HTTPException(status_code=404, detail=f"Stock {stock_id} not found")
