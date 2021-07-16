@@ -2,7 +2,10 @@ from fastapi import FastAPI
 
 from config import database, jwt_authentication, SECRET
 from plugins.fastapi_users import fastapi_users
-from routers import stock_router, dividend_router, stock_value_router, stock_data_router
+from routers import (
+    stock_router, dividend_router, stock_value_router, stock_data_router,
+    portfolio_router
+)
 
 
 def init_db(app):
@@ -26,6 +29,7 @@ def register_routers(app):
     app.include_router(stock_value_router)
     app.include_router(dividend_router)
     app.include_router(stock_data_router)
+    app.include_router(portfolio_router)
 
     app.include_router(
         fastapi_users.get_auth_router(jwt_authentication, requires_verification=True),

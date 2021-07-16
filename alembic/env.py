@@ -9,6 +9,7 @@ from models.users import UserModel
 from models.stock import Stock
 from models.stock_value import StockValue
 from models.stock_dividends import StockDividends
+from models.portfolio import Portfolio, PortfolioOperation, PortfolioStock
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
