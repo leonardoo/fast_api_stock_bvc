@@ -41,6 +41,7 @@ async def create_dividend(dividend: StockDividends, user: User = Depends(fastapi
 async def get_list_dividends():
     year = get_current_year()
     data = StockDividends.objects.filter(paid_at__gte=f"{year}-01-01", paid_at__lt=f"{year+1}-01-01")
+    data = data.select_related("stock_id")
     data = data.order_by("paid_at")
     return await data.all()
 
