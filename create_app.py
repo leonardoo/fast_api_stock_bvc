@@ -1,6 +1,7 @@
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
-from config import database, jwt_authentication, SECRET
+from config import database, jwt_authentication, SECRET, origins
 from plugins.fastapi_users import fastapi_users
 from routers import (
     stock_router, dividend_router, stock_value_router, stock_data_router,
@@ -52,9 +53,19 @@ def register_routers(app):
         tags=["users"],
     )
 
+def config_cors(app):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
 
 def create_app():
     app = FastAPI()
     init_db(app)
     register_routers(app)
+    config_cors(app)
     return app

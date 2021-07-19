@@ -2,10 +2,13 @@ import os
 
 from fastapi_users.authentication import JWTAuthentication
 
-
 import databases
 import sqlalchemy
 
+
+origins = [
+    "*",
+]
 
 DATABASE = os.getenv("URL_DB")
 database = databases.Database(DATABASE)
