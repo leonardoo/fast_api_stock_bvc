@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 from starlette.responses import JSONResponse
 
-from models.portfolio import Portfolio, PortfolioOperation
+from models.portfolio import Portfolio, PortfolioOperation, PortfolioStock
 from models.stock import Stock
 from models.users import User
 from serialization.responses import Message
@@ -30,8 +30,9 @@ async def list_portfolios(user: User = Depends(fastapi_users.current_user(verifi
     ).all()
     return portfolio
 
+
 @router.delete("/{portfolio_id}", response_model=Message)
-async def list_portfolios(portfolio_id: UUID, user: User = Depends(fastapi_users.current_user(verified=True))):
+async def delete_portfolio(portfolio_id: UUID, user: User = Depends(fastapi_users.current_user(verified=True))):
     portfolio = Portfolio.objects.filter(
         owner=user.id,
         id=id
@@ -58,3 +59,11 @@ async def add_operation_portfolio(operation: PortfolioOperation, user: User = De
     await operation.save()
     return operation
 
+
+@router.get("/stock/{portfolio_id}", response_model=List[PortfolioStock])
+async def list_stock_portfolio(portfolio_id: UUID, user: User = Depends(fastapi_users.current_user(verified=True))):
+    portfolio = await PortfolioStock.objects.filter(
+        owner=user.id,
+        portfolio=portfolio_id
+    ).select_related("stock_id").all()
+    return portfolio

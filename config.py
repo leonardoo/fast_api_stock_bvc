@@ -6,9 +6,7 @@ import databases
 import sqlalchemy
 
 
-origins = [
-    "*",
-]
+origins = ["*"]
 
 DATABASE = os.getenv("URL_DB")
 database = databases.Database(DATABASE)

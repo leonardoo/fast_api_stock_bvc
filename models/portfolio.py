@@ -71,8 +71,18 @@ async def after_save(sender, instance: PortfolioOperation, **kwargs):
         stock_id=instance.stock_id,
         owner=instance.created_by
     )
+
     if instance.operation == OperationStockEnum.buy.value:
         portfolio_stock.amount += instance.amount
     else:
         portfolio_stock.amount -= instance.amount
     await portfolio_stock.update()
+    portfolio = await Portfolio.objects.get(
+        portfolio=instance.portfolio
+    )
+    
+    if instance.operation == OperationStockEnum.buy.value:
+        portfolio.last_value += instance.amount * instance.value_by_stock
+    else:
+        portfolio.last_value -= instance.amount * instance.value_by_stock
+    await portfolio.update()
